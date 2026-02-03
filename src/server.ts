@@ -1,7 +1,11 @@
 import express, { Request, Response } from 'express'
 const app = express()
-import {Pool} from 'pg'
+import { Pool } from 'pg'
 const port = 3000
+import dotenv from 'dotenv'
+import path from 'path'
+
+dotenv.config({ path: path.join(process.cwd(), ".env") })
 
 
 
@@ -11,12 +15,13 @@ app.use(express.json())
 //
 
 const pool = new Pool({
-    connectionString:`${process.env.CONNECTION_STR}`})
+    connectionString: `${process.env.CONNECTION_STR}`
+})
 
 
 
 const initDB = async () => {
-  await pool.query(`
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS users(
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -26,7 +31,7 @@ const initDB = async () => {
         role VARCHAR(15) NOT NULL DEFAULT 'customer'
         )`);
 
-  await pool.query(`
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS  vechiles(
         id SERIAL PRIMARY KEY,
         vehicle_name VARCHAR(100) NOT NULL,
@@ -38,7 +43,7 @@ const initDB = async () => {
         )
         `);
 
-  await pool.query(`
+    await pool.query(`
     CREATE TABLE IF NOT EXISTS bookings(
       id SERIAL PRIMARY KEY,
       customer_id INTEGER NOT NULL,
@@ -56,13 +61,36 @@ const initDB = async () => {
   `);
 };
 
-
 initDB()
 
-app.get('/', (req:Request, res:Response) => {
-  res.send('Hello World!')
+// * register the users
+
+app.post('/api/v1/auth/signup', async (req: Request, res: Response) => {
+    const { name, email, password, phone, role } = req.body
+    try {
+
+        const result = await pool.query(`INSERT INTO users(name,email,password,phone,role) VALUES($1,$2,$3,$4,$5) RETURNING *`, [name, email, password, phone, role])
+        res.status(200).json({
+            success: true,
+            data: result.rows[0]
+        })
+
+
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            error: err.message
+        })
+    }
+})
+
+
+
+
+app.get('/', (req: Request, res: Response) => {
+    res.send('Hello World!')
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`)
 })
