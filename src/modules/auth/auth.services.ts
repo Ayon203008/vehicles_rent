@@ -10,21 +10,30 @@ const SignInUser = async (email: string, password: string) => {
         return null
     }
     const user = result.rows[0]
-    const match = bcrypt.compare(password, user.password)
+    const match =await bcrypt.compare(password, user.password)
     if (!match) {
         return false
     }
-    const secret = "KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
+  
     const token = jwt.sign({
         name: user.name,
         email: user.email
     }, config.jwtsecret as string, {
         expiresIn: "7d"
     })
-    console.log({token})
-    return {token,user}
+    console.log({ token })
+    return { token, user }
 }
 
-export const authServices ={
-    SignInUser
+
+
+
+const SignUpUser = async (name: string, email: string, hashedPassword: string, phone: string, role: string) => {
+    const result = await pool.query(`INSERT INTO users(name,email,password,phone,role) VALUES($1,$2,$3,$4,$5) RETURNING *`, [name, email, hashedPassword, phone, role])
+    return result
+}
+
+export const authServices = {
+    SignInUser,
+    SignUpUser
 }
