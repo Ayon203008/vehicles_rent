@@ -9,7 +9,6 @@ router.get("/users",auth('admin'),UserController.GetAllUser)
 
 router.put("/users/:userId",auth("admin","customer"),UserController.UpdateUserData)
 
-
 router.delete("/users/:userId",auth("admin"),UserController.DeleteUserData)
 
 export const UserRouter = router
