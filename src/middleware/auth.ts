@@ -10,9 +10,13 @@ const auth = (...roles:string[]) => {
             if (!token) {
                 throw new Error("You are unauthorized")
             }
-            const decode = jwt.verify(token, config.jwtsecret as string)
+            const decode = jwt.verify(token, config.jwtsecret as string) as JwtPayload
             console.log({ decode })
-            req.user=decode as JwtPayload
+            req.user=decode 
+
+             if (roles.length && !roles.includes(decode.role)) {
+                return res.status(403).json({ success: false, message: "Forbidden: Access denied" });
+            }
 
             next()
         } catch (err: any) {

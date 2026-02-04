@@ -16,12 +16,14 @@ const SignInUser = async (email: string, password: string) => {
     }
   
     const token = jwt.sign({
+        id:user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role:user.role
     }, config.jwtsecret as string, {
         expiresIn: "7d"
     })
-    console.log({ token })
+    console.log( {token} )
     return { token, user }
 }
 

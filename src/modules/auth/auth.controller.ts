@@ -46,7 +46,7 @@ const SignUpUser = async (req: Request, res: Response) => {
             res.status(201).json({
                 "message": "User Registrated successfully",
                 success: true,
-                data: result.rows[0]
+                data: result
 
             })
 
