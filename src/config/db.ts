@@ -42,7 +42,7 @@ export const initDB = async () => {
       CONSTRAINT fk_booking_customer
         FOREIGN KEY (customer_id) REFERENCES users(id),
       CONSTRAINT fk_booking_vehicle
-        FOREIGN KEY (vehicle_id) REFERENCES vechiles(id)
+        FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
     )
   `);
 };
